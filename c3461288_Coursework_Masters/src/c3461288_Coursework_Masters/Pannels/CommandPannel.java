@@ -20,6 +20,7 @@ public class CommandPannel extends JPanel{
 		
 		jtf = new JTextField();
 		jb = new JButton("submit");
+		
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS) );
 		
 		add(jtf);

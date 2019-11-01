@@ -13,245 +13,235 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import Commands.Circle;
+import Commands.Clear;
+import Commands.Command;
+import Commands.DrawTo;
+import Commands.MoveTo;
+import Commands.RectangleCommand;
+import Commands.Reset;
+import Commands.Triangle;
+import Commands.Factories.CommandFactory;
 import Parsers.CommandParser;
 import c3461288_Coursework_Masters.Pannels.CanvasPannel;
 import c3461288_Coursework_Masters.Pannels.CodePannel;
 import c3461288_Coursework_Masters.Pannels.CommandPannel;
+import c3461288_Coursework_Masters.Pannels.ConsolePannel;
 
-
-public class Main{
+public class Main {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-
-		
-		
-		
 		JFrame jframe = new JFrame();
 		jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		jframe.setMinimumSize(new Dimension(800,474));
+		jframe.setMinimumSize(new Dimension(850, 580));
+		jframe.setMaximumSize(new Dimension (850, 580));
 		jframe.setLayout(new BorderLayout());
-		
+
 		JMenuBar jmbar = new JMenuBar();
-		
-		
+
 		JMenu File = new JMenu("File");
 		jmbar.add(File);
-		
+
 		JMenuItem Load = new JMenuItem("Load");
 		JMenuItem Save = new JMenuItem("Save");
-		
+
 		File.add(Load);
 		File.add(Save);
-		
-		
+
 		CodePannel codepannel = new CodePannel();
-		CommandPannel commandpannel = new CommandPannel();
-		CanvasPannel canvaspannel = new CanvasPannel();
-		canvaspannel.setMaximumSize(new Dimension(400,400));
+		CommandPannel commandpannel = codepannel.commandPannel;
+		CanvasPannel canvaspannel = new CanvasPannel(500,500);
 	
-		jframe.add(codepannel, BorderLayout.WEST);
-		jframe.add(commandpannel, BorderLayout.PAGE_END);
-		jframe.add(canvaspannel, BorderLayout.CENTER);
+		ConsolePannel consolepannel = new ConsolePannel();
+	
+		
+	
+		JScrollPane canvasscroller = new JScrollPane(canvaspannel);
+		
+		JTabbedPane canvastab = new JTabbedPane();
+		canvastab.addTab("Image", canvasscroller);
+		
+		
+		
+		
+		
+		
+		JTabbedPane codeareapane = new JTabbedPane();
+		codeareapane.addTab("CodeArea", codepannel);
+		
+		
+		
+		
+		
+		jframe.add(codeareapane, BorderLayout.WEST);
+		jframe.add(consolepannel , BorderLayout.SOUTH);
+		jframe.add(canvastab, BorderLayout.CENTER);
 		jframe.add(jmbar, BorderLayout.NORTH);
 		jframe.setVisible(true);
-		
+
 		CommandParser parser = new CommandParser();
 
 		Save.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-			
+
 				JFileChooser chooser = new JFileChooser();
 				chooser.setDialogTitle("Where Would You Like To Save?");
 				chooser.addChoosableFileFilter(new FileNameExtensionFilter(".txt", ".txt"));
-				
-				if(chooser.showSaveDialog(null) == chooser.APPROVE_OPTION) {
-					
+
+				if (chooser.showSaveDialog(null) == chooser.APPROVE_OPTION) {
+
 					String path = chooser.getSelectedFile().getAbsolutePath();
 					path = path.concat(".txt");
 					String name = chooser.getSelectedFile().getName();
-					
-					
+
 					System.out.println(path);
-					
+
 					try {
-						
+
 						java.io.File file = new java.io.File(path);
-						
-						//create a fos and write the string into a binary array
-						
+
+						// create a fos and write the string into a binary array
+
 						FileOutputStream fileOutputStream = new FileOutputStream(file);
 						fileOutputStream.write(codepannel.jta.getText().toString().getBytes());
 						fileOutputStream.close();
-					
-						
-						
+
 					} catch (Exception ee) {
 						// TODO Auto-generated catch block
 						ee.printStackTrace();
 					}
-					
+
 				}
-				
-				
-				
+
 			}
 		});
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
 		// Action Listners //
-		
+
 		Load.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+
 				// Open up a file explorer
-				
+
 				JFileChooser jfc = new JFileChooser();
 				jfc.setDialogTitle("Please Choose a File to Load");
 				jfc.addChoosableFileFilter(new FileNameExtensionFilter(".txt", ".txt"));
-				
-			
-				// open the jfc and run code if its been approved 
-				
-				if(jfc.showOpenDialog(null) == jfc.APPROVE_OPTION) {
-					
-					
-					
-					
-				// get the file path
-					
-				String filepath = jfc.getSelectedFile().getAbsolutePath();
-				
-				// get the contents of the file
-				
-				try {
-					String content = Files.readString(Paths.get(filepath));
-				
-					// set the codearea to contain the code
-				
-				codepannel.jta.setText(content);
-					
-				} catch (IOException e1) {
-					
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-					
-					
-					
+
+				// open the jfc and run code if its been approved
+
+				if (jfc.showOpenDialog(null) == jfc.APPROVE_OPTION) {
+
+					// get the file path
+
+					String filepath = jfc.getSelectedFile().getAbsolutePath();
+
+					// get the contents of the file
+
+					try {
+						String content = Files.readString(Paths.get(filepath));
+
+						// set the codearea to contain the code
+
+						codepannel.jta.setText(content);
+
+					} catch (IOException e1) {
+
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+
+					}
+
 				}
-				
-				
-					
-				}
-				
-				
-				
-				
+
 			}
 		});
+
+		// Create an Array of all the commands
+		String[] commandstrings = new String[] { "circle", "clear", "drawto", "moveto", "rectangle", "reset",
+				"triangle" };
+
+		// Create and ArrayList to hold all the command objects
+		ArrayList<Command> commands = new ArrayList<Command>();
+
+		// Create the commands factory
+
+		CommandFactory commandFactory = new CommandFactory(canvaspannel);
+
+		for (String command : commandstrings) {
+			Command commandobject = commandFactory.GetCommand(command);
+			commands.add(commandobject);
+		}
 		
 		
 		
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
 		commandpannel.jb.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				
+
 				// get the code from the JText Area
 				String Code = codepannel.jta.getText().toLowerCase();
-				
+
 				// get the code from the JText
 				String SingleCommand = commandpannel.jtf.getText().toString().toLowerCase();
-				
-				
-				
-				// check if the command text field is equal to run if so run the big block if not 
+
+				// check if the command text field is equal to run if so run the big block if
+				// not
 				// run the command line
-				
-				
-				if(SingleCommand.contentEquals("run")) {
-					
+
+				if (SingleCommand.contentEquals("run")) {
+
 					// Pass the code to the parser to break down the code line by line
-					Boolean Commandsarevalid = parser.ValidCommands(Code);
-					if(Commandsarevalid) {
-						
+					Boolean Commandsarevalid = parser.ValidCommands(Code, commands, consolepannel.jta);
+					if (Commandsarevalid) {
+
 						System.out.println("The Code is valid well done!");
-						
-					}else {
-						
+
+					} else {
+
 						System.out.println("Code is Invalid, please check it");
-						
+
 					}
-					
-				}else {
-					
-					
-					Boolean Commandsarevalid = parser.ValidCommands(SingleCommand);
-					if(Commandsarevalid) {
-						
+
+				} else {
+
+					Boolean Commandsarevalid = parser.ValidCommands(SingleCommand, commands, consolepannel.jta);
+
+					if (Commandsarevalid) {
+
 						System.out.println("The Code is valid well done!");
-						
-					}else {
-						
+
+					} else {
+
 						System.out.println("Code is Invalid, please check it");
-						
+
 					}
-					
-					
-					
-					
-					
-					
+
 				}
-				
-				
-				
-				
-				
-				
-				
+
 			}
-		});				
+		});
 	}
-
-	
-
 
 }
