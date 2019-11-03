@@ -44,12 +44,17 @@ public class Main {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
+		//Create the Jframe 
+		
 		JFrame jframe = new JFrame();
 		jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jframe.setMinimumSize(new Dimension(850, 580));
-		jframe.setMaximumSize(new Dimension (850, 580));
+		jframe.setMaximumSize(new Dimension(850, 580));
 		jframe.setLayout(new BorderLayout());
 
+		
+		// Create the Jmenu bar and add 2 sub menu Items
+		
 		JMenuBar jmbar = new JMenuBar();
 
 		JMenu File = new JMenu("File");
@@ -61,63 +66,88 @@ public class Main {
 		File.add(Load);
 		File.add(Save);
 
+		
+		// Create the pannels for the applications
+		
+		
 		CodePannel codepannel = new CodePannel();
 		CommandPannel commandpannel = codepannel.commandPannel;
-		CanvasPannel canvaspannel = new CanvasPannel(500,500);
-	
+		CanvasPannel canvaspannel = new CanvasPannel(500, 500);
+
 		ConsolePannel consolepannel = new ConsolePannel();
-	
-		
-	
+
 		JScrollPane canvasscroller = new JScrollPane(canvaspannel);
-		
+
 		JTabbedPane canvastab = new JTabbedPane();
 		canvastab.addTab("Image", canvasscroller);
-		
-		
-		
-		
-		
-		
+
 		JTabbedPane codeareapane = new JTabbedPane();
 		codeareapane.addTab("CodeArea", codepannel);
-		
-		
-		
-		
-		
+
 		jframe.add(codeareapane, BorderLayout.WEST);
-		jframe.add(consolepannel , BorderLayout.SOUTH);
+		jframe.add(consolepannel, BorderLayout.SOUTH);
 		jframe.add(canvastab, BorderLayout.CENTER);
 		jframe.add(jmbar, BorderLayout.NORTH);
 		jframe.setVisible(true);
 
+		
+		// Create the CommandParser object which will call
+		// the Validation method to validate user input
+
 		CommandParser parser = new CommandParser();
 
+		
+		
+		// Create an Array of all the commands
+		String[] commandstrings = new String[] { "circle", "clear", "drawto", "moveto", "rectangle", "reset",
+				"triangle" };
+
+		// Create and ArrayList to hold all the command objects
+		
+		ArrayList<Command> commands = new ArrayList<Command>();
+
+		// Create the commands factory and return the correct commands
+		// depending on the strings entered.
+
+		CommandFactory commandFactory = new CommandFactory(canvaspannel);
+
+		for (String command : commandstrings) {
+			Command commandobject = commandFactory.GetCommand(command);
+			commands.add(commandobject);
+		}
+		
+		
+		
+		// Create an Action Listener for the Save Button
+		
 		Save.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 
+				// Create the file Chooser Object 
+				
 				JFileChooser chooser = new JFileChooser();
 				chooser.setDialogTitle("Where Would You Like To Save?");
 				chooser.addChoosableFileFilter(new FileNameExtensionFilter(".txt", ".txt"));
-
+				
+				//Launch the chooser and save the path to the String path
+				// if approved is selected.
+				
 				if (chooser.showSaveDialog(null) == chooser.APPROVE_OPTION) {
 
 					String path = chooser.getSelectedFile().getAbsolutePath();
 					path = path.concat(".txt");
-					String name = chooser.getSelectedFile().getName();
-
-					System.out.println(path);
-
+				
 					try {
+						
+						// create a new file with the given path
 
 						java.io.File file = new java.io.File(path);
 
-						// create a fos and write the string into a binary array
-
+						// write the userinput to the file 
+						
 						FileOutputStream fileOutputStream = new FileOutputStream(file);
 						fileOutputStream.write(codepannel.jta.getText().toString().getBytes());
 						fileOutputStream.close();
@@ -132,7 +162,7 @@ public class Main {
 			}
 		});
 
-		// Action Listners //
+		//Create the action Listner for the Load Button
 
 		Load.addActionListener(new ActionListener() {
 
@@ -174,31 +204,13 @@ public class Main {
 			}
 		});
 
-		// Create an Array of all the commands
-		String[] commandstrings = new String[] { "circle", "clear", "drawto", "moveto", "rectangle", "reset",
-				"triangle" };
-
-		// Create and ArrayList to hold all the command objects
-		ArrayList<Command> commands = new ArrayList<Command>();
-
-		// Create the commands factory
-
-		CommandFactory commandFactory = new CommandFactory(canvaspannel);
-
-		for (String command : commandstrings) {
-			Command commandobject = commandFactory.GetCommand(command);
-			commands.add(commandobject);
-		}
+		// Add an action listener for the JButton
 		
-		
-		
-		
-
 		commandpannel.jb.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
+
 
 				// get the code from the JText Area
 				String Code = codepannel.jta.getText().toLowerCase();
@@ -207,8 +219,7 @@ public class Main {
 				String SingleCommand = commandpannel.jtf.getText().toString().toLowerCase();
 
 				// check if the command text field is equal to run if so run the big block if
-				// not
-				// run the command line
+				// not run the command line
 
 				if (SingleCommand.contentEquals("run")) {
 

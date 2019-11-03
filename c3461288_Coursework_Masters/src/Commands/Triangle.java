@@ -1,5 +1,7 @@
 package Commands;
 
+import java.util.ArrayList;
+
 import c3461288_Coursework_Masters.Pannels.CanvasPannel;
 
 public class Triangle extends Command {
@@ -11,10 +13,10 @@ public class Triangle extends Command {
 		setCanvas(canvas);
 	}
 
-	public void Runcommand(String[] array) {
+	public void Runcommand(ArrayList<String> array) {
 		// TODO Auto-generated method stub
 		System.out.println("triangle executed");
-		canvas.drawtriangle(Integer.parseInt(array[1]), Integer.parseInt(array[2]), Integer.parseInt(array[3]));
+		canvas.drawtriangle(Integer.parseInt(array.get(1)), Integer.parseInt(array.get(2)), Integer.parseInt(array.get(3)));
 	}
 
 }

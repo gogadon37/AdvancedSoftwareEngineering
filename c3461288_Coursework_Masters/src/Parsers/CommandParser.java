@@ -1,27 +1,27 @@
 package Parsers;
 
-import java.sql.Date;
 import java.util.ArrayList;
-
 import javax.swing.JTextArea;
-
 import Commands.Command;
 
 public class CommandParser {
 
 	ArrayList<Command> actualCommands;
-	ArrayList<String[]> approvedcommands;
+	ArrayList<ArrayList<String>> approvedcommands;
+	ArrayList<String> recombinedcommands;
 	JTextArea console;
+	String[] commandname;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public Boolean ValidCommands(String writtencommand, ArrayList<Command> commands, JTextArea jta) {
 
 		// Assign the variables
-		console= jta;
+		console = jta;
 		String[] writtencommands = writtencommand.split("\\r?\\n|\\r");
 		actualCommands = commands;
-		approvedcommands = new ArrayList<String[]>();
+		approvedcommands = new ArrayList<ArrayList<String>>();
+		recombinedcommands = new ArrayList<String>();
 		ArrayList<String> writtencommandsblanklinesremoved = new ArrayList<String>();
 
 		// loop through written commands if the line isn't blank add it
@@ -31,9 +31,9 @@ public class CommandParser {
 
 			if (!s.trim().equals("")) {
 
-			writtencommandsblanklinesremoved.add(s);
-			
-			} 
+				writtencommandsblanklinesremoved.add(s);
+
+			}
 		}
 
 		// Check if there are any commands after empty lines have been removed
@@ -53,6 +53,7 @@ public class CommandParser {
 
 			if (!IsValidCommand(singleline)) {
 
+				System.out.println("command not found");
 				return false; // if command is not valid return false
 
 			}
@@ -62,11 +63,17 @@ public class CommandParser {
 		// correct. loop through the array until the approved command matches
 		// the correct command name execute the command passing in its parameters.
 
-		for (String[] array : approvedcommands) {
+		for (ArrayList<String> array : approvedcommands) {
+
+			System.out.println("array element" + array.get(0));
+
+		}
+
+		for (ArrayList<String> array : approvedcommands) {
 
 			for (Command c : commands) {
 
-				if (array[0].equals(c.getName())) {
+				if (array.get(0).equals(c.getName())) {
 
 					c.Runcommand(array);
 
@@ -91,7 +98,22 @@ public class CommandParser {
 		// split the command by each remaining space. This should give
 		// an array containing the command name and any parameters.
 
-		String[] Commandname = command.split(" ");
+		// split at first instance of a space leaving two values, command and params
+		String[] commandname = command.split(" ", 2);
+
+		// split the parameters by commas if there is more than one element in the
+		// array.
+
+		String[] params;
+
+		if (commandname.length != 1) {
+
+			params = commandname[1].split(",");
+
+		} else {
+
+			params = new String[0];
+		}
 
 		// loop through the actual commands and check if
 		// the command name entered matches a verified command
@@ -100,80 +122,51 @@ public class CommandParser {
 
 		for (Command c : actualCommands) {
 
-			if (Commandname[0].equals(c.getName())) {
+			if (commandname[0].equals(c.getName())) {
 
-				if (checktheparamaters(c.getNumOfParams(), Commandname)) {
+				if (checktheparamaters(c.getNumOfParams(), params, commandname[0])) {
 
 					return true;
 
-				}else {
-					
-					
+				} else {
+
 					return false;
 				}
 			}
 
 		}
-		
-		
-		
-		console.setText( java.time.LocalTime.now() + " ERROR: Command does not exist");
+
+		console.setText(java.time.LocalTime.now() + " ERROR: Command does not exist");
 		return false;
 
 	}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	private boolean checktheparamaters(int numberexpected, String[] commandarray) {
+	private boolean checktheparamaters(int numberexpected, String[] paramarray, String commandname) {
 
 		// check that the length of the array holding the command and its
-		// variables is equal to the number expected + 1. The +1 takes into
-		// account that the first parameter of the array will not be a parameter.
+		// variables is equal to the number expected.
 
-		if (commandarray.length != (numberexpected + 1)) {
+		// reset the recombined array to prevent the same command being added over and
+		// over.
+		recombinedcommands = new ArrayList<String>();
+
+		if (paramarray.length != (numberexpected)) {
 
 			console.setText("ERROR: The command contains the incorrect number of paramaters");
 			return false;
 
 		}
 
-		// working with the syntax from the assignment specification all parameters
-		// unless its the last or only parameter should be directly followed by a comma
-		// with no space following it.
-
-		else if (numberexpected > 1) {
-
-			for (int x = 1; x <= (numberexpected - 1); x++) {
-
-				String lastchar = commandarray[x].substring(commandarray[x].length() - 1);
-
-				if (!lastchar.equals(",")) {
-
-					console.setText("ERROR: Syntax Error, Please ensure commas are used where appropriate");
-					return false;
-
-				} else {
-
-					// a comma has been found but now we need to remove it before we try to parse it
-					// to and int
-					
-					commandarray[x] = commandarray[x].substring(0, (commandarray[x].length() - 1));
-
-				}
-
-			}
-
-		}
-
 		// The array contains the correct number of parameters and they are
 		// Separated appropriately so now try to parse them to int's
-		
-		
-		for (int x = 1; x <= numberexpected; x++) {
+
+		for (int x = 0; x != numberexpected; x++) {
 
 			try {
 
-				Integer.parseInt(commandarray[x]);
+				Integer.parseInt(paramarray[x].trim());
 
 			} catch (Exception e) {
 
@@ -183,13 +176,27 @@ public class CommandParser {
 
 		}
 
-
 		// The command has passed all checks add it to the
-		// approved commands arraylist.
-	  
-		approvedcommands.add(commandarray);
+		// recombined the array and add it to the approved commands arraylist.
+
+		System.out.println("Command name " + commandname);
+
+		recombinedcommands.add(commandname);
+
+		for (int x = 0; x < paramarray.length; x++) {
+
+			recombinedcommands.add(paramarray[x].trim());
+
+		}
+
+		approvedcommands.add(recombinedcommands);
 		return true;
 
+	}
+
+	public String getVariable(String string) {
+		// TODO Auto-generated method stub
+		return "string";
 	}
 
 }

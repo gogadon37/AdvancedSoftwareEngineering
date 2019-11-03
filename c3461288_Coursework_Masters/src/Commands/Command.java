@@ -1,10 +1,12 @@
 package Commands;
 
+import java.util.ArrayList;
+
 import c3461288_Coursework_Masters.Pannels.CanvasPannel;
 
 public abstract class Command{
 	
-	public  void Runcommand(String[] array) {
+	public  void Runcommand(ArrayList<String> array) {
 		System.out.println("run command");
 	}
 	

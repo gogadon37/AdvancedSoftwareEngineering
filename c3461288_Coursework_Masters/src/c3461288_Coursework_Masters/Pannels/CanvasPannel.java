@@ -84,7 +84,7 @@ public class CanvasPannel extends JPanel {
 	
 	public void clear(){
 		
-	g.setColor(Color.white);
+	g.setColor(Color.black);
 	g.fillRect(0, 0, imagewidth,imageheight);
 	g.setColor(Color.green);
 	repaint();

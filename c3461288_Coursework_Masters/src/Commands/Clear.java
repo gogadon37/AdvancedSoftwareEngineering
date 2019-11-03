@@ -1,5 +1,7 @@
 package Commands;
 
+import java.util.ArrayList;
+
 import c3461288_Coursework_Masters.Pannels.CanvasPannel;
 
 public class Clear extends Command{
@@ -13,7 +15,7 @@ public class Clear extends Command{
 	}
 	
 
-	public void Runcommand(String[] array) {
+	public void Runcommand(ArrayList<String> array) {
 		// TODO Auto-generated method stub
 		System.out.println("Clear Executed");
 		canvas.clear();

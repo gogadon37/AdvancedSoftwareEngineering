@@ -1,5 +1,7 @@
 package Commands;
 
+import java.util.ArrayList;
+
 import c3461288_Coursework_Masters.Pannels.CanvasPannel;
 
 public class Circle extends Command{
@@ -15,11 +17,11 @@ public class Circle extends Command{
 
 
 
-	public void Runcommand(String[] array) {
+	public void Runcommand(ArrayList<String> array) {
 		
 		
 		System.out.println("Circle executed");
-		canvas.drawcircle(Integer.parseInt(array[1]));
+		canvas.drawcircle(Integer.parseInt(array.get(1)));
 		
 	}
 

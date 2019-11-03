@@ -1,8 +1,5 @@
 package Commands.Factories;
 
-
-import java.awt.Rectangle;
-
 import Commands.Circle;
 import Commands.Clear;
 import Commands.Command;
@@ -19,13 +16,15 @@ public class CommandFactory {
 	CanvasPannel canvas;
 
 	public CommandFactory(CanvasPannel canvaspan) {
-		// TODO Auto-generated constructor stub
+		// set the canvas equal to the canvas pannel paramater passed in the constructor.
 		canvas = canvaspan;
 	}
 	
 	
 	public Command GetCommand(String Type) {
-		// TODO Auto-generated constructor stub
+		
+		// Return the correct Command subclass object depending on the String which has been passed into 
+		// the method.
 
 		switch (Type) {
 

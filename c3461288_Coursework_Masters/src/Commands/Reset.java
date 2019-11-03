@@ -1,5 +1,7 @@
 package Commands;
 
+import java.util.ArrayList;
+
 import c3461288_Coursework_Masters.Pannels.CanvasPannel;
 
 public class Reset extends Command{
@@ -14,7 +16,7 @@ public class Reset extends Command{
 	
 
 	
-	public void Runcommand(String[] array) {
+	public void Runcommand(ArrayList<String> Array) {
 		// TODO Auto-generated method stub
 		canvas.resetxy();
 		System.out.println("reset executed");
