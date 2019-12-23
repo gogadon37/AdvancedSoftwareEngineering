@@ -58,12 +58,12 @@ public class CommandFactory {
 			command = new Reset("reset", 0, canvas);
 			break;
 			
-			
 			// Reset
 		case "triangle":
 			command = new Triangle("triangle", 3, canvas);
 			break;
-
+			
+		
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + Type);
 		}
