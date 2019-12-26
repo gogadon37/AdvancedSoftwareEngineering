@@ -245,7 +245,7 @@ public class Main {
 
 					} else {
 
-						
+						System.out.println("Code is Invalid, please check it");
 
 					}
 
