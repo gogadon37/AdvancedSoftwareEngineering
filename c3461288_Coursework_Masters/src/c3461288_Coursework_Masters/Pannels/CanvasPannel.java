@@ -68,14 +68,11 @@ public class CanvasPannel extends JPanel {
 	}
 	
 	public void drawtriangle(int base, int adj, int hyp) {
-		
-		g.drawLine(positionx, positiony, (positionx+base), positiony);
-		g.drawLine((positionx+base), positiony, (positionx+base), (positiony+hyp));
-		g.drawLine((positionx+base), (positiony+hyp), positionx, positiony);
-		
-		
+		int[] xPoints = {positionx, (positionx+base)};
+		int[] yPoints = {(positionx+base), (positiony+adj)};
+		int nPoints = (positionx+hyp);
+		g.drawPolygon(xPoints, yPoints, nPoints);
 	
-		
 	}
 	
 	

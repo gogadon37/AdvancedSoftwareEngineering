@@ -3,12 +3,10 @@ package Parsers;
 import java.util.ArrayList;
 import javax.swing.JTextArea;
 import Commands.Command;
-import Variables.Variable;
 
 public class CommandParser {
 
 	ArrayList<Command> actualCommands;
-	ArrayList<Variable> variables;
 	ArrayList<ArrayList<String>> approvedcommands;
 	ArrayList<String> recombinedcommands;
 	JTextArea console;
@@ -22,7 +20,6 @@ public class CommandParser {
 		console = jta;
 		String[] writtencommands = writtencommand.split("\\r?\\n|\\r");
 		actualCommands = commands;
-		variables = new ArrayList<Variable>();
 		approvedcommands = new ArrayList<ArrayList<String>>();
 		recombinedcommands = new ArrayList<String>();
 		ArrayList<String> writtencommandsblanklinesremoved = new ArrayList<String>();
@@ -51,66 +48,16 @@ public class CommandParser {
 
 		// loop through the writtencommandsblanklinesremoved array
 		// running the IsValidCommand method for each of its strings
-		int currentindex = -1;
+
 		for (String singleline : writtencommandsblanklinesremoved) {
 
-			currentindex++;
+			if (!IsValidCommand(singleline)) {
 
-			// ***********************************************************************************
-			// check if first 3 chars are the var keyword
-			// but dont run this segment if the lines length is
-			// less than 3 chars as it will not say var and cause a
-			// bug with the next conditon
-
-			if (singleline.length() >= 3 && singleline.trim().subSequence(0, 3).equals("var")) {
-
-				// Handle the variable creation
-
-				// trim the first 3 chars off
-				String varnameandvalue = (String) singleline.substring(3, singleline.length()).trim();
-
-				// split by equals //
-				String[] keypair = varnameandvalue.split("=");
-
-				// check if the KeyPair has two values
-				if (keypair.length == 2) {
-					int pair;
-					// Check the second value is a valid int
-
-					try {
-						pair = Integer.parseInt(keypair[1].trim());
-
-					} catch (Exception e) {
-
-						console.setText("Error a variables value should be a valid int");
-						System.out.println(keypair[1]);
-						return false;
-					}
-
-					// create the variable.
-
-					Variable x = new Variable(keypair[0].trim(), pair);
-					variables.add(x);
-
-				} else {
-
-					console.setText("Error a variable should have a value split by and =");
-					return false;
-
-				}
-
-			} else if (!IsValidCommand(singleline)) {
-
-				
-					return false;
-
-
-				} 
+				System.out.println("command not found");
+				return false; // if command is not valid return false
 
 			}
-		
-
-		// ********************************************************************************************
+		}
 
 		// The approvedcommands arraylist now holds the commands if all were
 		// correct. loop through the array until the approved command matches
@@ -166,7 +113,6 @@ public class CommandParser {
 		} else {
 
 			params = new String[0];
-
 		}
 
 		// loop through the actual commands and check if
@@ -183,167 +129,15 @@ public class CommandParser {
 					return true;
 
 				} else {
-					console.setText(java.time.LocalTime.now() + " ERROR: Command does not exist");
+
 					return false;
 				}
-				
-// **************************************************************************************
-// **************************************************************************************
-// **************************************************************************************
-				
-			}else if (variables.size() > 0) {
-
-				String[] possiblevarname;
-				
-				// Try to split any paramateters 
-				
-				try {
-					possiblevarname = commandname[1].split(" ");
-					
-				}catch (Exception e) {
-				
-					// if theres no paramaters than it is not a valid command 
-					
-					console.setText(java.time.LocalTime.now() + " ERROR: Please ensure the variable has a paramater");
-					return false;
-				}
-					
-					
-				
-					// Loop through the variables array and check that name against the command entered
-
-						for (Variable v : variables) {
-							
-							if (v.getKey().trim().equals(commandname[0].trim())) {
-
-					
-								// VARIABLE REASSINGED
-								if (possiblevarname[0].trim().equals("=")) {
-
-									try {
-										int newvalue = Integer.parseInt(possiblevarname[1].trim());
-										v.setPair(newvalue);
-										return true;
-										
-									} catch (Exception e) {
-										// TODO: handle exception
-										console.setText("please ensure that the new value is a valid int");
-										return false;
-									}
-
-							
-								// VARIABLE INCREMENTATION
-								} else if (possiblevarname[0].trim().equals("++")) {
-									
-									if(possiblevarname.length>1) { // there should only be one value for ++
-										console.setText("The ++ should be the only paramater");
-										return false;
-									}else {
-									v.setPair(v.getPair() + 1);
-									return true;	
-									}
-
-								}
-								// VARIABLE DECREMENT
-								else if (possiblevarname[0].trim().equals("--")) {
-									
-									if(possiblevarname.length>1) { // there should only be one value for ++
-										console.setText("The -- should be the only paramater");
-										return false;
-									}else {
-									v.setPair(v.getPair() - 1);
-									return true;	
-									}
-
-								}
-								
-
-								// Addition
-								
-								else if(possiblevarname[0].trim().equals("+")) {
-									
-									try {
-										int newvalue = Integer.parseInt(possiblevarname[1].trim());
-										v.setPair( v.getPair() + newvalue);
-										return true;
-										
-									} catch (Exception e) {
-										// TODO: handle exception
-										console.setText("please ensure that the new value is a valid int");
-										return false;
-									}
-								}
-								
-								// Subtraction
-								else if(possiblevarname[0].trim().equals("-")) {
-									
-									try {
-										int newvalue = Integer.parseInt(possiblevarname[1].trim());
-										v.setPair( v.getPair() - newvalue);
-										return true;
-										
-									} catch (Exception e) {
-										// TODO: handle exception
-										console.setText("please ensure that the new value is a valid int");
-										return false;
-									}
-								}
-								
-								// Multiplication
-								else if(possiblevarname[0].trim().equals("*")) {
-									
-									try {
-										int newvalue = Integer.parseInt(possiblevarname[1].trim());
-										v.setPair( v.getPair() * newvalue);
-										return true;
-										
-									} catch (Exception e) {
-										// TODO: handle exception
-										console.setText("please ensure that the new value is a valid int");
-										return false;
-									}
-								}
-								
-								
-								// Devision
-								else if(possiblevarname[0].trim().equals("/")) {
-									
-									try {
-										int newvalue = Integer.parseInt(possiblevarname[1].trim());
-										v.setPair( v.getPair() / newvalue);
-										return true;
-										
-									} catch (Exception e) {
-										// TODO: handle exception
-										console.setText("please ensure that the new value is a valid int");
-										return false;
-									}
-								}
-								
-								// PARAMATERS CANNOT BE MATCHED 
-								else {
-									console.setText("please check your paramters");
-									return false;
-									
-								}
-								
-							}
-							
-							//Variable name not found
-							console.setText("please that you are refering to a Variable or Command");
-							return false;
-						}
-					}
-					
+			}
 
 		}
-		
-		// Command name not found ... only show this version if no variables have been referenced.
-		console.setText("Please make sure you have entered a valid command");
+
+		console.setText(java.time.LocalTime.now() + " ERROR: Command does not exist");
 		return false;
-		
-	
-	
 
 	}
 
@@ -369,23 +163,6 @@ public class CommandParser {
 		// Separated appropriately so now try to parse them to int's
 
 		for (int x = 0; x != numberexpected; x++) {
-
-			// **********************************************
-			// if the parameter is equal to the name of a variable then set the paramater
-			// equal to that variables value
-
-			// Loop through the variables array if a match is found then set it
-
-			for (Variable v : variables) {
-
-				if (paramarray[x].equals(v.getKey())) {
-
-					paramarray[x] = v.getPair() + " ";
-
-				}
-			}
-
-			// ****************************************
 
 			try {
 
@@ -418,7 +195,6 @@ public class CommandParser {
 	}
 
 	public String getVariable(String string) {
-
 		// TODO Auto-generated method stub
 		return "string";
 	}
