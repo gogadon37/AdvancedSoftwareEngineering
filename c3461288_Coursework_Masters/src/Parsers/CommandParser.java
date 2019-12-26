@@ -1,18 +1,25 @@
 package Parsers;
 
+import static org.junit.Assume.assumeNoException;
+
 import java.util.ArrayList;
 import javax.swing.JTextArea;
+
 import Commands.Command;
+import Loops.Loop;
 import Variables.Variable;
 
 public class CommandParser {
 
 	ArrayList<Command> actualCommands;
 	ArrayList<Variable> variables;
+	ArrayList <String> filteredcommands;
+	ArrayList<Loop> loopsarray;
 	ArrayList<ArrayList<String>> approvedcommands;
 	ArrayList<String> recombinedcommands;
 	JTextArea console;
 	String[] commandname;
+	int numberofcompletedloops = 0;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -22,7 +29,9 @@ public class CommandParser {
 		console = jta;
 		String[] writtencommands = writtencommand.split("\\r?\\n|\\r");
 		actualCommands = commands;
+		loopsarray = new ArrayList<Loop>();
 		variables = new ArrayList<Variable>();
+		filteredcommands = new ArrayList<String>();
 		approvedcommands = new ArrayList<ArrayList<String>>();
 		recombinedcommands = new ArrayList<String>();
 		ArrayList<String> writtencommandsblanklinesremoved = new ArrayList<String>();
@@ -49,12 +58,176 @@ public class CommandParser {
 
 		}
 
+//LOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPS 
+
+		
+// before anything starts search through the loops for every instance of the word loop
+		int counter = -1;
+		
+		
+		
+		for(String singlecommand : writtencommandsblanklinesremoved) {
+			
+			counter++;
+			String split[] = singlecommand.trim().split(" ");
+			
+			
+			
+			// --------------------------------------------------------------------------------------------------------------------------------------
+			
+			if (split[0].trim().equals("loop")){
+			 
+				if(split.length>3){ console.setText("A loop should have 3 paramters"); return false;}else {
+					
+						if(split[1].trim().equals("for")) {
+						
+							
+								//  1) check if the value is a variable if so set the value of it to those variables
+								for (Variable v : variables) {
+	
+										if (split[2].equals(v.getKey())) {
+											split[2] = v.getPair() + " ";
+										}
+								}
+								
+								// 2) Parse the value to an int
+						
+								try {
+									int loops = Integer.parseInt(split[2].trim());
+									Loop loop = new Loop(counter);
+									loop.setTimestoloop(loops);
+									loopsarray.add(loop);
+									numberofcompletedloops++;
+									
+									
+								} catch (Exception e) {
+									// TODO: handle exception
+								}
+							
+						
+						}else {
+					
+							console.setText("Please ensure that the second paramter for the loop is for");
+							return false;
+					
+						}
+	
+				}
+					
+			}
+			
+			// --------------------------------------------------------------------------------------------------------------------------------------
+			
+			if (split[0].trim().equals("endloop")) {
+				
+					if(split.length > 1) {console.setText("Please ensure the endloop has no additional paramters"); return false;} else {
+					
+					
+						// check that there is a loop created before it
+						if(loopsarray.size()>0) {
+							
+							
+							loopsarray.get(numberofcompletedloops-1).setEndposition(counter);
+							loopsarray.get(numberofcompletedloops-1).setComplete(true);
+							
+							
+							
+						}else{console.setText("Please ensure a loop is created before ending it"); return false;}
+					
+					}
+			}
+		}
+		
+		
+		
+		// Check that all loops that have been created are completed
+		
+		for(Loop loop: loopsarray) {
+			if(!loop.isComplete()) { console.setText("Please ensure all loops end with an endloop command"); return false;}
+		}
+		
+	
+		// Time to add each command between the start and end of the loop x amount of times
+		
+		int numberofcommandsadded = 0;
+		
+		for(Loop loop: loopsarray) {
+			
+			int totalloops = loop.getTimestoloop(); 
+			
+		
+			
+			// to ensure that each loops start and end updates with the addition of new commands update them	
+			loop.setStartpostion(loop.getStartpostion() + numberofcommandsadded);
+			loop.setEndposition(loop.getEndposition() + numberofcommandsadded);
+			int totalelements = (loop.getEndposition()-loop.getStartpostion())-1; // the number of elements between start and end
+			
+			
+			for(int x = 1; x< totalloops; x++) {
+					
+						for(int x1 = loop.getEndposition() - totalelements; x1 >= loop.getStartpostion(); x1--) {
+							
+							writtencommandsblanklinesremoved.add(loop.getEndposition(), writtencommandsblanklinesremoved.get(x1+1));
+							numberofcommandsadded++;
+							
+						}
+		
+			}
+			
+	
+				
+		}
+		
+		// remove the loop tags
+
+		
+		if(loopsarray.size() != 0) {
+			
+			// clear the array
+		loopsarray.clear();
+		numberofcompletedloops = 0;
+		}
+		
+		
+		for(String singString : writtencommandsblanklinesremoved) {
+			
+			System.out.println("command " + singString);
+			
+			
+			String splits[] = singString.split(" ");
+			if(splits[0].trim().equals("loop") || splits[0].trim().equals("endloop")){
+				
+			}else {
+				
+				filteredcommands.add(singString);
+				
+			}
+			
+			
+		}
+		
+		
+		
+	
+		
+		
+		
+		
+		
+		
+		
+//LOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPSLOOPS 
+		
+		
+		
+		
+		
+		
+
 		// loop through the writtencommandsblanklinesremoved array
 		// running the IsValidCommand method for each of its strings
-		int currentindex = -1;
-		for (String singleline : writtencommandsblanklinesremoved) {
+		for (String singleline1 : filteredcommands) {
 
-			currentindex++;
 
 			// ***********************************************************************************
 			// check if first 3 chars are the var keyword
@@ -62,12 +235,12 @@ public class CommandParser {
 			// less than 3 chars as it will not say var and cause a
 			// bug with the next conditon
 
-			if (singleline.length() >= 3 && singleline.trim().subSequence(0, 3).equals("var")) {
+			if (singleline1.length() >= 3 && singleline1.trim().subSequence(0, 3).equals("var")) {
 
 				// Handle the variable creation
 
 				// trim the first 3 chars off
-				String varnameandvalue = (String) singleline.substring(3, singleline.length()).trim();
+				String varnameandvalue = (String) singleline1.substring(3, singleline1.length()).trim();
 
 				// split by equals //
 				String[] keypair = varnameandvalue.split("=");
@@ -99,16 +272,13 @@ public class CommandParser {
 
 				}
 
-			} else if (!IsValidCommand(singleline)) {
+			} else if (!IsValidCommand(singleline1)) {
 
-				
-					return false;
-
-
-				} 
+				return false;
 
 			}
-		
+
+		}
 
 		// ********************************************************************************************
 
@@ -133,10 +303,9 @@ public class CommandParser {
 				}
 
 			}
+
 		}
-
 		return true; // All commands executed successfully return true
-
 	}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -186,164 +355,155 @@ public class CommandParser {
 					console.setText(java.time.LocalTime.now() + " ERROR: Command does not exist");
 					return false;
 				}
-				
+
 // **************************************************************************************
 // **************************************************************************************
 // **************************************************************************************
-				
-			}else if (variables.size() > 0) {
+
+			} else if (variables.size() > 0) {
 
 				String[] possiblevarname;
-				
-				// Try to split any paramateters 
-				
+
+				// Try to split any paramateters
+
 				try {
 					possiblevarname = commandname[1].split(" ");
-					
-				}catch (Exception e) {
-				
-					// if theres no paramaters than it is not a valid command 
-					
+
+				} catch (Exception e) {
+
+					// if theres no paramaters than it is not a valid command
+
 					console.setText(java.time.LocalTime.now() + " ERROR: Please ensure the variable has a paramater");
 					return false;
 				}
-					
-					
-				
-					// Loop through the variables array and check that name against the command entered
 
-						for (Variable v : variables) {
-							
-							if (v.getKey().trim().equals(commandname[0].trim())) {
+				// Loop through the variables array and check that name against the command
+				// entered
 
-					
-								// VARIABLE REASSINGED
-								if (possiblevarname[0].trim().equals("=")) {
+				for (Variable v : variables) {
 
-									try {
-										int newvalue = Integer.parseInt(possiblevarname[1].trim());
-										v.setPair(newvalue);
-										return true;
-										
-									} catch (Exception e) {
-										// TODO: handle exception
-										console.setText("please ensure that the new value is a valid int");
-										return false;
-									}
+					if (v.getKey().trim().equals(commandname[0].trim())) {
 
-							
-								// VARIABLE INCREMENTATION
-								} else if (possiblevarname[0].trim().equals("++")) {
-									
-									if(possiblevarname.length>1) { // there should only be one value for ++
-										console.setText("The ++ should be the only paramater");
-										return false;
-									}else {
-									v.setPair(v.getPair() + 1);
-									return true;	
-									}
+						// VARIABLE REASSINGED
+						if (possiblevarname[0].trim().equals("=")) {
 
-								}
-								// VARIABLE DECREMENT
-								else if (possiblevarname[0].trim().equals("--")) {
-									
-									if(possiblevarname.length>1) { // there should only be one value for ++
-										console.setText("The -- should be the only paramater");
-										return false;
-									}else {
-									v.setPair(v.getPair() - 1);
-									return true;	
-									}
+							try {
+								int newvalue = Integer.parseInt(possiblevarname[1].trim());
+								v.setPair(newvalue);
+								return true;
 
-								}
-								
-
-								// Addition
-								
-								else if(possiblevarname[0].trim().equals("+")) {
-									
-									try {
-										int newvalue = Integer.parseInt(possiblevarname[1].trim());
-										v.setPair( v.getPair() + newvalue);
-										return true;
-										
-									} catch (Exception e) {
-										// TODO: handle exception
-										console.setText("please ensure that the new value is a valid int");
-										return false;
-									}
-								}
-								
-								// Subtraction
-								else if(possiblevarname[0].trim().equals("-")) {
-									
-									try {
-										int newvalue = Integer.parseInt(possiblevarname[1].trim());
-										v.setPair( v.getPair() - newvalue);
-										return true;
-										
-									} catch (Exception e) {
-										// TODO: handle exception
-										console.setText("please ensure that the new value is a valid int");
-										return false;
-									}
-								}
-								
-								// Multiplication
-								else if(possiblevarname[0].trim().equals("*")) {
-									
-									try {
-										int newvalue = Integer.parseInt(possiblevarname[1].trim());
-										v.setPair( v.getPair() * newvalue);
-										return true;
-										
-									} catch (Exception e) {
-										// TODO: handle exception
-										console.setText("please ensure that the new value is a valid int");
-										return false;
-									}
-								}
-								
-								
-								// Devision
-								else if(possiblevarname[0].trim().equals("/")) {
-									
-									try {
-										int newvalue = Integer.parseInt(possiblevarname[1].trim());
-										v.setPair( v.getPair() / newvalue);
-										return true;
-										
-									} catch (Exception e) {
-										// TODO: handle exception
-										console.setText("please ensure that the new value is a valid int");
-										return false;
-									}
-								}
-								
-								// PARAMATERS CANNOT BE MATCHED 
-								else {
-									console.setText("please check your paramters");
-									return false;
-									
-								}
-								
+							} catch (Exception e) {
+								// TODO: handle exception
+								console.setText("please ensure that the new value is a valid int");
+								return false;
 							}
-							
-							//Variable name not found
-							console.setText("please that you are refering to a Variable or Command");
-							return false;
-						}
-					}
-					
 
+							// VARIABLE INCREMENTATION
+						} else if (possiblevarname[0].trim().equals("++")) {
+
+							if (possiblevarname.length > 1) { // there should only be one value for ++
+								console.setText("The ++ should be the only paramater");
+								return false;
+							} else {
+								v.setPair(v.getPair() + 1);
+								return true;
+							}
+
+						}
+						// VARIABLE DECREMENT
+						else if (possiblevarname[0].trim().equals("--")) {
+
+							if (possiblevarname.length > 1) { // there should only be one value for ++
+								console.setText("The -- should be the only paramater");
+								return false;
+							} else {
+								v.setPair(v.getPair() - 1);
+								return true;
+							}
+
+						}
+
+						// Addition
+
+						else if (possiblevarname[0].trim().equals("+")) {
+
+							try {
+								int newvalue = Integer.parseInt(possiblevarname[1].trim());
+								v.setPair(v.getPair() + newvalue);
+								return true;
+
+							} catch (Exception e) {
+								// TODO: handle exception
+								console.setText("please ensure that the new value is a valid int");
+								return false;
+							}
+						}
+
+						// Subtraction
+						else if (possiblevarname[0].trim().equals("-")) {
+
+							try {
+								int newvalue = Integer.parseInt(possiblevarname[1].trim());
+								v.setPair(v.getPair() - newvalue);
+								return true;
+
+							} catch (Exception e) {
+								// TODO: handle exception
+								console.setText("please ensure that the new value is a valid int");
+								return false;
+							}
+						}
+
+						// Multiplication
+						else if (possiblevarname[0].trim().equals("*")) {
+
+							try {
+								int newvalue = Integer.parseInt(possiblevarname[1].trim());
+								v.setPair(v.getPair() * newvalue);
+								return true;
+
+							} catch (Exception e) {
+								// TODO: handle exception
+								console.setText("please ensure that the new value is a valid int");
+								return false;
+							}
+						}
+
+						// Devision
+						else if (possiblevarname[0].trim().equals("/")) {
+
+							try {
+								int newvalue = Integer.parseInt(possiblevarname[1].trim());
+								v.setPair(v.getPair() / newvalue);
+								return true;
+
+							} catch (Exception e) {
+								// TODO: handle exception
+								console.setText("please ensure that the new value is a valid int");
+								return false;
+							}
+						}
+
+						// PARAMATERS CANNOT BE MATCHED
+						else {
+							console.setText("please check your paramters");
+							return false;
+
+						}
+
+					}
+
+					// Variable name not found
+					console.setText("please that you are refering to a Variable or Command");
+					return false;
+				}
+			}
 		}
-		
-		// Command name not found ... only show this version if no variables have been referenced.
+
+		// Command name not found ... only show this version if no variables have been
+		// referenced.
 		console.setText("Please make sure you have entered a valid command");
 		return false;
-		
-	
-	
 
 	}
 
@@ -402,7 +562,7 @@ public class CommandParser {
 		// The command has passed all checks add it to the
 		// recombined the array and add it to the approved commands arraylist.
 
-		System.out.println("Command name " + commandname);
+		
 
 		recombinedcommands.add(commandname);
 
