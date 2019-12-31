@@ -100,7 +100,7 @@ public class Main {
 		
 		// Create an Array of all the commands
 		String[] commandstrings = new String[] { "circle", "clear", "drawto", "moveto", "rectangle", "reset",
-				"triangle" };
+				"triangle"};
 
 		// Create and ArrayList to hold all the command objects
 		
@@ -245,7 +245,7 @@ public class Main {
 
 					} else {
 
-						System.out.println("Code is Invalid, please check it");
+						
 
 					}
 
