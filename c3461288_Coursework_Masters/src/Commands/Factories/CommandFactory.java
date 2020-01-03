@@ -31,37 +31,37 @@ public class CommandFactory {
 
 		// Circle
 		case "circle":
-			command = new Circle("circle", 1, canvas);
+			command = Circle.getInstance("circle", 1, canvas);
 			break;
 
 		// Clear
 		case "clear":
-			command = new Clear("clear", 0, canvas);
+			command = Clear.getInstance("clear", 0, canvas);
 			break;
 
 		// DrawTo
 		case "drawto":
-			command = new DrawTo("drawto", 2, canvas);
+			command = DrawTo.getInstance("drawto", 2, canvas);
 			break;
 
 		// MoveTo
 		case "moveto":
-			command = new MoveTo("moveto", 2, canvas);
+			command = MoveTo.getInstance("moveto", 2, canvas);
 			break;
 
 		// Rectangle
 		case "rectangle":
-			command = new RectangleCommand("rectangle", 2, canvas);
+			command = RectangleCommand.getInstance("rectangle", 2, canvas);
 			break;
 
 		// Reset
 		case "reset":
-			command = new Reset("reset", 0, canvas);
+			command = Reset.getInstance("reset", 0, canvas);
 			break;
 			
 			// Reset
 		case "triangle":
-			command = new Triangle("triangle", 3, canvas);
+			command = Triangle.getInstance("triangle", 3, canvas);
 			break;
 			
 		

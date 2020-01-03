@@ -6,9 +6,11 @@ import java.util.Collections;
 import javax.swing.JTextArea;
 
 import Commands.Command;
+import Commands.Factories.CommandFactory;
 import Ifs.Ifstatement;
 import Loops.Loop;
 import Variables.Variable;
+import c3461288_Coursework_Masters.Pannels.CanvasPannel;
 import exceptions.CommandNotFoundException;
 import exceptions.DuplicateVariableException;
 import exceptions.IncorrectNumberofParamatersException;
@@ -33,7 +35,7 @@ public class CommandParser {
 	String[] commandname;
 	int numberofloopscreated = 0;
 
-	public Boolean ValidCommands(String writtencommand, ArrayList<Command> commands, JTextArea jta) throws NullCommandException, IncorrectNumberofParamatersException, InvalidParamatersException, OpeningTagNotFoundException, VariableNotFoundException, UnclosedTagException, DuplicateVariableException, CommandNotFoundException {
+	public Boolean ValidCommands(String writtencommand, ArrayList<Command> commands, JTextArea jta, CanvasPannel canvasPannel, CommandFactory commandfactory) throws NullCommandException, IncorrectNumberofParamatersException, InvalidParamatersException, OpeningTagNotFoundException, VariableNotFoundException, UnclosedTagException, DuplicateVariableException, CommandNotFoundException {
 
 		console = jta;
 		String[] writtencommands = writtencommand.split("\\r?\\n|\\r");
@@ -680,6 +682,8 @@ public class CommandParser {
 				
 			} catch (CommandNotFoundException e) {
 				// TODO Auto-generated catch block
+				
+				System.out.println("command not found");
 				throw e;
 			}
 		}
@@ -688,19 +692,14 @@ public class CommandParser {
 		
 		String executed = "-----------Commands Executed---------";
 
-		for (ArrayList<String> array : approvedcommands) {
+		for (ArrayList<String> singleCommand : approvedcommands) {
 
 			
 			
-			for (Command c1 : commands) {
-
-				if (array.get(0).equals(c1.getName())) {
-
-					c1.Runcommand(array);
-					executed = executed + "\n" + array.get(0) + " executed";
-				}
-
-			}
+			Command command =  commandfactory.GetCommand(singleCommand.get(0).trim());
+			command.Runcommand(singleCommand);
+			
+			executed = executed + "\n" + singleCommand.get(0) + " executed";
 			
 		}
 		

@@ -6,7 +6,9 @@ import c3461288_Coursework_Masters.Pannels.CanvasPannel;
 
 public class RectangleCommand extends Command {
 
-	public RectangleCommand(String syntax, int paramsnumber, CanvasPannel canvas) {
+	static RectangleCommand singleinstance = null;
+	
+	private RectangleCommand(String syntax, int paramsnumber, CanvasPannel canvas) {
 		// TODO Auto-generated constructor stub
 		
 		setName(syntax);
@@ -14,6 +16,27 @@ public class RectangleCommand extends Command {
 		setCanvas(canvas);
 		
 	}
+	
+	// return a singleton object if one is already created else create one.
+	
+	public static RectangleCommand getInstance(String syntax, int paramsnumber, CanvasPannel canvas) {
+		
+		if(singleinstance == null) {
+			
+			singleinstance = new RectangleCommand(syntax, paramsnumber, canvas);
+			System.out.println("new instance created for " + syntax);
+			
+		}else {
+			
+			System.out.println("Using existing Instance for " + syntax);
+		}
+		
+		
+		return singleinstance;
+	}
+	
+	
+	
 
 	public void Runcommand(ArrayList<String> array) {
 		// TODO Auto-generated method stub

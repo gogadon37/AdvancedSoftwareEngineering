@@ -6,14 +6,16 @@ import c3461288_Coursework_Masters.Pannels.CanvasPannel;
 
 public abstract class Command{
 	
-	public  void Runcommand(ArrayList<String> array) {
-		System.out.println("run command");
-	}
+	// abstract methods all children must include
+	
+	abstract public void Runcommand(ArrayList<String> array);
+	
 	
 	private String name = "";
 	private int numOfParams = 0;
 	CanvasPannel canvas;
 	
+	// public methods
 	
 	public CanvasPannel getCanvas() {
 		return canvas;
@@ -36,7 +38,7 @@ public abstract class Command{
 		this.numOfParams = numOfParams;
 	}
 
-
+	
 	
 	
 	
