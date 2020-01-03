@@ -9,6 +9,14 @@ import Commands.Command;
 import Ifs.Ifstatement;
 import Loops.Loop;
 import Variables.Variable;
+import exceptions.CommandNotFoundException;
+import exceptions.DuplicateVariableException;
+import exceptions.IncorrectNumberofParamatersException;
+import exceptions.InvalidParamatersException;
+import exceptions.NullCommandException;
+import exceptions.OpeningTagNotFoundException;
+import exceptions.UnclosedTagException;
+import exceptions.VariableNotFoundException;
 
 public class CommandParser {
 
@@ -25,7 +33,7 @@ public class CommandParser {
 	String[] commandname;
 	int numberofloopscreated = 0;
 
-	public Boolean ValidCommands(String writtencommand, ArrayList<Command> commands, JTextArea jta) {
+	public Boolean ValidCommands(String writtencommand, ArrayList<Command> commands, JTextArea jta) throws NullCommandException, IncorrectNumberofParamatersException, InvalidParamatersException, OpeningTagNotFoundException, VariableNotFoundException, UnclosedTagException, DuplicateVariableException, CommandNotFoundException {
 
 		console = jta;
 		String[] writtencommands = writtencommand.split("\\r?\\n|\\r");
@@ -57,8 +65,11 @@ public class CommandParser {
 		// Check that something other than space has been entered
 
 		if (writtencommandsblanklinesremoved.size() == 0) {
+			
+			
 			console.setText(" ERROR: Please enter a command into the terminal");
-			return false;
+			throw new NullCommandException("No valid commands once space has been removed");
+			
 		}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,8 +101,8 @@ public class CommandParser {
 
 				if(split.length != 4) {
 					
-					console.setText("Incorrect number of paramaters for the variable command");
-					return false;
+					console.setText("Incorrect number of paramaters for the command " + singlecommand);
+					throw new IncorrectNumberofParamatersException("Incorrect number of paramaters for Command" + singlecommand);
 					
 				}
 				
@@ -99,8 +110,8 @@ public class CommandParser {
 				
 				if(!split[2].equals("=")) {
 					
-					console.setText("Please ensure that the variable command uses the = with spaces");
-					return false;
+					console.setText("Please ensure that the variable command uses the = with spaces for"  + singlecommand);
+					throw new InvalidParamatersException("Please ensure that the variable command uses the = with spaces for"  + singlecommand);
 				}
 				
 				
@@ -115,8 +126,8 @@ public class CommandParser {
 
 						if (v.getKey().equals(keypair[0].trim())) {
 
-							console.setText("Error please ensure that all variable names are unique");
-							return false;
+							console.setText("Error please ensure that all variable names are unique for "  + singlecommand);
+							throw new DuplicateVariableException("Error please ensure that all variable names are unique for "  + singlecommand);
 						}
 
 					}
@@ -137,9 +148,9 @@ public class CommandParser {
 
 					} catch (Exception e) {
 
-						console.setText("Error the second paramter should point to a valid int or a valid variable");
+						console.setText("Error the second paramter of a variable should point to a valid int or a valid variable for "  + singlecommand);
 
-						return false;
+						throw new NumberFormatException("Error the second paramter of a variable should point to a valid int or a valid variable for " + singlecommand);
 					}
 
 					// create the variable.
@@ -149,8 +160,8 @@ public class CommandParser {
 
 				} else {
 
-					console.setText("Error a variable should have a value split by and =");
-					return false;
+					console.setText("Error a variable should have a value split by and = for "  + singlecommand);
+					throw new InvalidParamatersException("Error a variable should have a value split by and = for "  + singlecommand);
 
 				}
 
@@ -166,8 +177,8 @@ public class CommandParser {
 			if (split[0].trim().equals("loop")) {
 
 				if (split.length > 3) {
-					console.setText("A loop should have 3 paramters");
-					return false;
+					console.setText("A loop should have 3 paramters for "  + singlecommand );
+					throw new IncorrectNumberofParamatersException("Error a loop should have 3 paramters for "  + singlecommand);
 				} else {
 
 					if (split[1].trim().equals("for")) {
@@ -200,14 +211,14 @@ public class CommandParser {
 
 						} catch (Exception e) {
 							// TODO: handle exception
-							console.setText("Error creating loop, please ensure you are using the correct syntax");
-							return false;
+							console.setText("Error creating loop, please ensure you are using the correct syntax for " +   singlecommand);
+							throw new InvalidParamatersException("Error creating loop, please ensure you are using the correct syntax for "  + singlecommand);
 						}
 
 					} else {
 
-						console.setText("Please ensure that the second paramter for the loop is for");
-						return false;
+						console.setText("Please ensure that the second paramter for the loop is for at "  + singlecommand);
+						throw new InvalidParamatersException("Please ensure that the second paramter for the loop is for at "  + singlecommand);
 
 					}
 
@@ -223,8 +234,8 @@ public class CommandParser {
 			if (split[0].trim().equals("endloop")) {
 
 				if (split.length > 1) {
-					console.setText("Please ensure the endloop has no additional paramters");
-					return false;
+					console.setText("Please ensure the endloop has no additional paramters for "  + singlecommand);
+					throw new IncorrectNumberofParamatersException("Please ensure the endloop has no additional paramters for "  + singlecommand);
 				} else {
 
 					currenthiarachy--;
@@ -233,8 +244,8 @@ public class CommandParser {
 
 					if (loopsarray.size() == 0) {
 
-						console.setText("Please ensure that a loop has been created");
-						return false;
+						console.setText("Please ensure that a loop has been created for "  + singlecommand);
+						throw new OpeningTagNotFoundException("Please ensure that a loop has been created for " + singlecommand);
 
 					}
 
@@ -272,8 +283,8 @@ public class CommandParser {
 					
 					if(then[0].trim().split(" ").length != 4 ) {
 						
-						console.setText("Incorrect number of paramaters, Please ensure that you have spaces between each element");
-						return false;
+						console.setText("Incorrect number of paramaters, Please ensure that you have spaces between each element for "  + singlecommand);
+						throw new IncorrectNumberofParamatersException("Incorrect number of paramaters, Please ensure that you have spaces between each element for "  + singlecommand);
 					}
 					
 					
@@ -313,12 +324,12 @@ public class CommandParser {
 						try {
 
 							Integer.parseInt(splitagain[0].trim());
-							System.out.println("int entered");
+							
 
 						} catch (Exception e) {
 
-							console.setText("Error the variable in the if statement cannot be found");
-							return false;
+							console.setText("Error the variable in the if statement cannot be found for "  + singlecommand);
+							throw new VariableNotFoundException("Error the variable in the if statement cannot be found for "  + singlecommand);
 
 						}
 
@@ -335,13 +346,13 @@ public class CommandParser {
 
 					try {
 						Integer.parseInt(splitagain[1].trim());
-						System.out.println("correct");
+					
 
 					} catch (Exception e) {
 						// TODO: handle exception
 
-						console.setText("please ensure that the comparrison vaule is a valid int or variable");
-						return false;
+						console.setText("please ensure that the comparrison vaule is a valid int or variable for "  + singlecommand);
+						throw new VariableNotFoundException("please ensure that the comparrison vaule is a valid int or variable for " +   singlecommand);
 					}
 
 					// create the if statement
@@ -364,14 +375,10 @@ public class CommandParser {
 					System.out.println(values.trim().split(" ").length);
 					
 					
-					
-					
-					
-					
 					if(values.trim().split(" ").length !=3) {
 						
-						console.setText("Please ensure the paramters are split by spaces");
-						return false;
+						console.setText("Please ensure the paramters are split by spaces for "  + singlecommand);
+						throw new InvalidParamatersException("Please ensure the paramters are split by spaces for"  + singlecommand);
 					}
 					
 					String[] value1and2 = values.split("=", 2);
@@ -379,8 +386,8 @@ public class CommandParser {
 					if (value1and2.length != 2) {
 
 						console.setText(
-								"Error please ensure that the if statement has 2 paramters seperated by a condition =");
-						return false;
+								"Error please ensure that the if statement has 2 paramters seperated by a condition = for "  + singlecommand);
+						throw new IncorrectNumberofParamatersException("Error please ensure that the if statement has 2 paramters seperated by a condition = for " + singlecommand );
 					} else {
 
 						// check the first paramter against variables
@@ -411,8 +418,8 @@ public class CommandParser {
 						} catch (Exception e) {
 							// TODO: handle exception
 
-							console.setText("please ensure that the values being compared are valid ints or variables");
-							return false;
+							console.setText("please ensure that the values being compared are valid ints or variables for "  + singlecommand);
+							throw new NumberFormatException("please ensure that the values being compared are valid ints or variables for "  + singlecommand);
 
 						}
 
@@ -436,14 +443,14 @@ public class CommandParser {
 
 				if (split.length > 1) {
 
-					console.setText("please ensure the endif has no additional paramters");
-					return false;
+					console.setText("please ensure the endif has no additional paramters for"  + singlecommand);
+					throw new IncorrectNumberofParamatersException("please ensure the endif has no additional paramters for "  + singlecommand);
 				}
 
 				if (ifstatementarray.size() == 0) {
 
-					console.setText("Please ensure that an if statement has been created before attempting to close");
-					return false;
+					console.setText("Please ensure that an if statement has been created before attempting to close for "  + singlecommand);
+					throw new OpeningTagNotFoundException("Please ensure that an if statement has been created before attempting to close for "  + singlecommand);
 				}
 
 				// get the last ifstatementcreated
@@ -467,7 +474,7 @@ public class CommandParser {
 		if (ifstatementarray.size() != 0) {
 
 			console.setText("please ensure all ifstatements are closed");
-			return false;
+			throw new UnclosedTagException("please ensure all ifstatements are closed");
 		}
 
 		// execute the if statements
@@ -493,7 +500,7 @@ public class CommandParser {
 
 			} else {
 
-				System.out.println("this code ran" + ifs.getSinglestatementcommands());
+			
 
 				if (ifs.getSinglestatementcommands().trim().equals("na")) {
 
@@ -539,7 +546,7 @@ public class CommandParser {
 		if (loopsarray.size() > 0) {
 
 			console.setText("Please ensure all opening loop tags are closed by an endloop tag");
-			return false;
+			throw new UnclosedTagException("Please ensure all opening loop tags are closed by an endloop tag");
 
 		}
 
@@ -584,8 +591,8 @@ public class CommandParser {
 							.equals("var") && totalloops > 1) {
 
 						console.setText(
-								"A variable with the same name can't be created more than once try moving it outside the array");
-						return false;
+								"A variable with the same name can't be created more than once");
+						throw new DuplicateVariableException("A variable with the same name can't be created more than once");
 
 					}
 
@@ -665,28 +672,39 @@ public class CommandParser {
 
 		for (String single : filteredcommands) {
 
-			if (!IsValidCommand(single)) {
+			try {
+				IsValidCommand(single);
 
-				return false;
 
+				
+				
+			} catch (CommandNotFoundException e) {
+				// TODO Auto-generated catch block
+				throw e;
 			}
 		}
 
 		// execute the commands
+		
+		String executed = "-----------Commands Executed---------";
 
 		for (ArrayList<String> array : approvedcommands) {
 
+			
+			
 			for (Command c1 : commands) {
 
 				if (array.get(0).equals(c1.getName())) {
 
 					c1.Runcommand(array);
-
+					executed = executed + "\n" + array.get(0) + " executed";
 				}
 
 			}
-
+			
 		}
+		
+		console.setText(executed);
 		return true; // All commands executed successfully return true
 	}
 
@@ -696,7 +714,7 @@ public class CommandParser {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	private Boolean IsValidCommand(String command) {
+	private Boolean IsValidCommand(String command) throws CommandNotFoundException, IncorrectNumberofParamatersException, InvalidParamatersException {
 
 		// Remove additional spaces from the command. This allows
 		// for the user to use spaces to organise their code in the editor
@@ -721,7 +739,14 @@ public class CommandParser {
 			params = new String[1];
 			params[0] = commandname[1];
 			
-			}else {
+			}else if(commandname[0].trim().equals("triangle")) {
+				
+				params = commandname[1].split(",",5);
+				
+				
+			}
+			
+			else {
 			
 			params = commandname[1].split(",",2);
 	
@@ -744,7 +769,7 @@ public class CommandParser {
 
 		for (Command c : actualCommands) {
 
-			if (commandname[0].trim().equals(c.getName())) {
+			if (commandname[0].trim().equals(c.getName().trim())) {
 
 				if (checktheparamaters(c.getNumOfParams(), params, commandname[0].trim())) {
 
@@ -753,7 +778,7 @@ public class CommandParser {
 
 				} else {
 
-					return false;
+					throw new InvalidParamatersException("Paramaters are invalid for " + command);
 				}
 
 			}
@@ -771,8 +796,8 @@ public class CommandParser {
 
 			} catch (Exception e) {
 				
-				console.setText("Error incorrect number of paramaters for a variable modifier command");
-				return false;
+				console.setText("Error incorrect number of paramaters for a variable modifier command for " + command );
+				throw new IncorrectNumberofParamatersException("Error incorrect number of paramaters for a variable modifier command for "+ command );
 			}
 			
 			
@@ -819,16 +844,16 @@ public class CommandParser {
 
 						} catch (Exception e) {
 							// TODO: handle exception
-							console.setText("please ensure that the new value is a valid int");
-							return false;
+							console.setText("please ensure that the new value is a valid int for " + command);
+							throw new InvalidParamatersException("please ensure that the new value is a valid int for " + command);
 						}
 
 						// VARIABLE INCREMENTATION
 					} else if (possiblevarname[0].trim().equals("++")) {
 
 						if (possiblevarname.length > 1) { // there should only be one value for ++
-							console.setText("The ++ should be the only paramater");
-							return false;
+							console.setText("The ++ should be the only paramater for " + command );
+							throw new InvalidParamatersException("please ensure the adjustment is the only paramater for " + command);
 						} else {
 							v.setPair(v.getPair() + 1);
 							return true;
@@ -839,8 +864,8 @@ public class CommandParser {
 					else if (possiblevarname[0].trim().equals("--")) {
 
 						if (possiblevarname.length > 1) { // there should only be one value for ++
-							console.setText("The -- should be the only paramater");
-							return false;
+							throw new InvalidParamatersException("please ensure the adjustment is the only paramater for " + command);
+							
 						} else {
 							v.setPair(v.getPair() - 1);
 							return true;
@@ -860,8 +885,8 @@ public class CommandParser {
 
 						} catch (Exception e) {
 							// TODO: handle exception
-							console.setText("please ensure that the new value is a valid int");
-							return false;
+							console.setText("please ensure that the new value is a valid int for " + command);
+							throw new InvalidParamatersException("please ensure that the new value is a valid int for "+ command );
 						}
 					}
 
@@ -875,8 +900,8 @@ public class CommandParser {
 
 						} catch (Exception e) {
 							// TODO: handle exception
-							console.setText("please ensure that the new value is a valid int");
-							return false;
+							console.setText("please ensure that the new value is a valid int for "+ command );
+							throw new InvalidParamatersException("please ensure that the new value is a valid int for " + command);
 						}
 					}
 
@@ -890,8 +915,8 @@ public class CommandParser {
 
 						} catch (Exception e) {
 							// TODO: handle exception
-							console.setText("please ensure that the new value is a valid int");
-							return false;
+							console.setText("please ensure that the new value is a valid int for " + command);
+							throw new InvalidParamatersException("please ensure that the new value is a valid int for " + command);
 						}
 					}
 
@@ -905,15 +930,15 @@ public class CommandParser {
 
 						} catch (Exception e) {
 							// TODO: handle exception
-							console.setText("please ensure that the new value is a valid int");
-							return false;
+							console.setText("please ensure that the new value is a valid int for " + command );
+							throw new InvalidParamatersException("please ensure that the new value is a valid int for " + command);
 						}
 					}
 
 					// PARAMATERS CANNOT BE MATCHED
 					else {
-						console.setText("the variable modifier cannot be identified");
-						return false;
+						console.setText("the variable modifier cannot be identified for " + command);
+						throw new InvalidParamatersException("Paramater not recognised for " + command);
 
 					}
 
@@ -921,20 +946,21 @@ public class CommandParser {
 
 			} // Variable name not found
 
-			console.setText("please that you are refering to a Variable or Command " + possiblevarname[0].trim());
-			return false;
+			console.setText("please that you are refering to a Variable or Command for " + possiblevarname[0].trim());
+			throw new CommandNotFoundException("please that you are refering to a Variable or Command for " + possiblevarname[0].trim());
 		}
 
 		// Command name not found ... only show this version if no variables have been
 		// referenced.
-		console.setText("Please make sure you have entered a valid command " + commandname[0]);
-		return false;
+		console.setText("Please make sure you have entered a valid command for " + commandname[0]);
+		throw new CommandNotFoundException("Please make sure you have entered a valid command for " + commandname[0]);
+		
 
 	}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	private boolean checktheparamaters(int numberexpected, String[] paramarray, String commandname) {
+	private boolean checktheparamaters(int numberexpected, String[] paramarray, String commandname) throws IncorrectNumberofParamatersException, InvalidParamatersException {
 
 		// check that the length of the array holding the command and its
 		// variables is equal to the number expected.
@@ -945,8 +971,8 @@ public class CommandParser {
 
 		if (paramarray.length != (numberexpected)) {
 
-			console.setText("ERROR: The command contains the incorrect number of paramaters");
-			return false;
+			console.setText("ERROR: The command contains the incorrect number of paramaters for " + commandname);
+			throw new IncorrectNumberofParamatersException("ERROR: The command contains the incorrect number of paramaters for " + commandname);
 
 		}
 
@@ -978,8 +1004,8 @@ public class CommandParser {
 
 			} catch (Exception e) {
 
-				console.setText("ERROR: Please make sure the Paramater is a valid Integer");
-				return false;
+				console.setText("ERROR: Please make sure the Paramater is a valid Integer for " + commandname);
+				throw new InvalidParamatersException("ERROR: Please make sure the Paramater is a valid Integer for " + commandname);
 			}
 
 		}

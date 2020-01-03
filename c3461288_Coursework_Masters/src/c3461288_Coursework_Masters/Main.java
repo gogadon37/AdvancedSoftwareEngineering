@@ -38,6 +38,9 @@ import c3461288_Coursework_Masters.Pannels.CanvasPannel;
 import c3461288_Coursework_Masters.Pannels.CodePannel;
 import c3461288_Coursework_Masters.Pannels.CommandPannel;
 import c3461288_Coursework_Masters.Pannels.ConsolePannel;
+import exceptions.CommandNotFoundException;
+import exceptions.IncorrectNumberofParamatersException;
+import exceptions.NullCommandException;
 
 public class Main {
 
@@ -112,8 +115,22 @@ public class Main {
 		CommandFactory commandFactory = new CommandFactory(canvaspannel);
 
 		for (String command : commandstrings) {
-			Command commandobject = commandFactory.GetCommand(command);
-			commands.add(commandobject);
+			Command commandobject;
+			
+			// Command Factory can throw a CommandNotFoundException
+			
+			try {
+				
+				commandobject = commandFactory.GetCommand(command);
+				commands.add(commandobject);
+				
+				
+				
+			} catch (CommandNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
 		}
 		
 		
@@ -221,33 +238,31 @@ public class Main {
 				// check if the command text field is equal to run if so run the big block if
 				// not run the command line
 
-				if (SingleCommand.contentEquals("run")) {
+				if (SingleCommand.trim().contentEquals("run")) {
 
 					// Pass the code to the parser to break down the code line by line
-					Boolean Commandsarevalid = parser.ValidCommands(Code, commands, consolepannel.jta);
-					if (Commandsarevalid) {
-
-						System.out.println("The Code is valid well done!");
-
-					} else {
-
-						System.out.println("Code is Invalid, please check it");
-
+				
+					try {
+						parser.ValidCommands(Code, commands, consolepannel.jta);
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						//e1.printStackTrace();
+						System.out.println("CODE TERMINATED");
 					}
+				
 
 				} else {
 
-					Boolean Commandsarevalid = parser.ValidCommands(SingleCommand, commands, consolepannel.jta);
-
-					if (Commandsarevalid) {
-
-						System.out.println("The Code is valid well done!");
-
-					} else {
-
-						
-
+				
+					try {
+					 parser.ValidCommands(SingleCommand, commands, consolepannel.jta);
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						//e1.printStackTrace();
+						System.out.println("CODE TERMINATED");
 					}
+
+					
 
 				}
 

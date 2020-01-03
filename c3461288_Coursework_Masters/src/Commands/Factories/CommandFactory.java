@@ -9,6 +9,7 @@ import Commands.RectangleCommand;
 import Commands.Reset;
 import Commands.Triangle;
 import c3461288_Coursework_Masters.Pannels.CanvasPannel;
+import exceptions.CommandNotFoundException;
 
 public class CommandFactory {
 
@@ -21,7 +22,7 @@ public class CommandFactory {
 	}
 	
 	
-	public Command GetCommand(String Type) {
+	public Command GetCommand(String Type) throws CommandNotFoundException {
 		
 		// Return the correct Command subclass object depending on the String which has been passed into 
 		// the method.
@@ -65,7 +66,7 @@ public class CommandFactory {
 			
 		
 		default:
-			throw new IllegalArgumentException("Unexpected value: " + Type);
+			throw new CommandNotFoundException("CommandObject not found  " + Type);
 		}
 
 		return command;

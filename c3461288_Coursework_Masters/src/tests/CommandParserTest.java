@@ -12,11 +12,19 @@ import Commands.Command;
 import Commands.Factories.CommandFactory;
 import Parsers.CommandParser;
 import c3461288_Coursework_Masters.Pannels.CanvasPannel;
+import exceptions.CommandNotFoundException;
+import exceptions.DuplicateVariableException;
+import exceptions.IncorrectNumberofParamatersException;
+import exceptions.InvalidParamatersException;
+import exceptions.NullCommandException;
+import exceptions.OpeningTagNotFoundException;
+import exceptions.UnclosedTagException;
+import exceptions.VariableNotFoundException;
 
 class CommandParserTest {
 
 	@Test
-	void CommandsandParamaters() {
+	void CommandsandParamaters() throws NullCommandException, IncorrectNumberofParamatersException, InvalidParamatersException, OpeningTagNotFoundException, VariableNotFoundException, UnclosedTagException, DuplicateVariableException, CommandNotFoundException {
 
 		// We want to test the parser class by entering a string of commands.
 		// If the command is valid it should return true. if the command or the
@@ -46,8 +54,15 @@ class CommandParserTest {
 		CommandFactory commandFactory = new CommandFactory(cp);
 
 		for (String command : commandstrings) {
-			Command commandobject = commandFactory.GetCommand(command);
-			commands.add(commandobject);
+			Command commandobject;
+			try {
+				commandobject = commandFactory.GetCommand(command);
+				commands.add(commandobject);
+			} catch (CommandNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 
 		// Assert Statements
@@ -75,7 +90,7 @@ class CommandParserTest {
 	}
 
 	@Test
-	void variabletest() {
+	void variabletest() throws NullCommandException, IncorrectNumberofParamatersException, InvalidParamatersException, OpeningTagNotFoundException, VariableNotFoundException, UnclosedTagException, DuplicateVariableException, CommandNotFoundException {
 
 		// the aim of this test is to check that the value of a variable has been set
 		// the idea is that the validate commands method will set the variable where
@@ -99,8 +114,15 @@ class CommandParserTest {
 		CommandFactory commandFactory = new CommandFactory(cp);
 
 		for (String command : commandstrings) {
-			Command commandobject = commandFactory.GetCommand(command);
-			commands.add(commandobject);
+			Command commandobject;
+			try {
+				commandobject = commandFactory.GetCommand(command);
+				commands.add(commandobject);
+			} catch (CommandNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 		// create the user input command to store a variable
 		CommandParser commandParser = new CommandParser();
@@ -116,7 +138,7 @@ class CommandParserTest {
 	}
 
 	@Test
-	void loops() {
+	void loops() throws NullCommandException, IncorrectNumberofParamatersException, InvalidParamatersException, OpeningTagNotFoundException, VariableNotFoundException, UnclosedTagException, DuplicateVariableException, CommandNotFoundException {
 
 		// this test is to check that the parser class accepts the loop string as a
 		// valid
@@ -139,8 +161,16 @@ class CommandParserTest {
 		CommandFactory commandFactory = new CommandFactory(cp);
 
 		for (String command : commandstrings) {
-			Command commandobject = commandFactory.GetCommand(command);
-			commands.add(commandobject);
+			Command commandobject;
+			
+			try {
+				commandobject = commandFactory.GetCommand(command);
+				commands.add(commandobject);
+			} catch (CommandNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		}
+				
 		}
 		
 		// create the user input command to store a variable
