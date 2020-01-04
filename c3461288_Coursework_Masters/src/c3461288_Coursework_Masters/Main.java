@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -15,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -65,9 +67,12 @@ public class Main {
 
 		JMenuItem Load = new JMenuItem("Load");
 		JMenuItem Save = new JMenuItem("Save");
+		JMenuItem SaveImage = new JMenuItem("SaveImage");
+		
 
 		File.add(Load);
 		File.add(Save);
+		File.add(SaveImage);
 
 		
 		// Create the pannels for the applications
@@ -156,6 +161,7 @@ public class Main {
 
 					String path = chooser.getSelectedFile().getAbsolutePath();
 					path = path.concat(".txt");
+					FileOutputStream fileOutputStream = null;
 				
 					try {
 						
@@ -165,13 +171,23 @@ public class Main {
 
 						// write the userinput to the file 
 						
-						FileOutputStream fileOutputStream = new FileOutputStream(file);
+						fileOutputStream = new FileOutputStream(file);
 						fileOutputStream.write(codepannel.jta.getText().toString().getBytes());
-						fileOutputStream.close();
+						
 
 					} catch (Exception ee) {
 						// TODO Auto-generated catch block
 						ee.printStackTrace();
+					}finally {
+						
+						
+						try {
+							fileOutputStream.close();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						
 					}
 
 				}
@@ -220,6 +236,54 @@ public class Main {
 
 			}
 		});
+		
+		
+		SaveImage.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+			
+
+				// Create the file Chooser Object 
+				
+				JFileChooser chooser = new JFileChooser();
+				chooser.setDialogTitle("Where Would You Like To Save?");
+				chooser.addChoosableFileFilter(new FileNameExtensionFilter(".jpg", ".jpg"));
+				
+				//Launch the chooser and save the path to the String path
+				// if approved is selected.
+				
+				if (chooser.showSaveDialog(null) == chooser.APPROVE_OPTION) {
+
+					String path = chooser.getSelectedFile().getAbsolutePath();
+					path = path.concat(".jpg");
+				
+					try {
+						
+						// create a new file with the given path
+
+						java.io.File file = new java.io.File(path);
+						
+						BufferedImage bi = canvaspannel.getBi();
+
+						// write the bitmapimage to the jpeg image
+						
+						FileOutputStream fileOutputStream = new FileOutputStream(file);
+						ImageIO.write(bi, "jpg", fileOutputStream);
+						
+					} catch (Exception ee) {
+						// TODO Auto-generated catch block
+						ee.printStackTrace();
+						
+					}
+
+				}
+
+	
+			}
+		});
+		
 
 		// Add an action listener for the JButton
 		
@@ -260,6 +324,7 @@ public class Main {
 						// TODO Auto-generated catch block
 						//e1.printStackTrace();
 						System.out.println("CODE TERMINATED");
+						System.out.println(e1.getStackTrace());
 					}
 
 					

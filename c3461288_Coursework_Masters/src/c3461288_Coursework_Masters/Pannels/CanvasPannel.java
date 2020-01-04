@@ -14,6 +14,14 @@ public class CanvasPannel extends JPanel {
 	int imageheight;
 	
 	BufferedImage bi;
+	public BufferedImage getBi() {
+		return bi;
+	}
+
+
+
+
+
 	Graphics g;
 	
 	public CanvasPannel(int width, int height) {

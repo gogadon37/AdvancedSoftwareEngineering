@@ -12,6 +12,7 @@ public class Ifstatement {
 	int condition2 = -1;
 	String singlestatementcommands = "na";
 	
+	int endposition = -1;
 	
 	public Ifstatement(int start) {
 		// TODO Auto-generated constructor stub
@@ -19,8 +20,7 @@ public class Ifstatement {
 		startpostion = start;
 		
 	}
-	
-	int endposition = -1;					// end position of the loop
+						// end position of the loop
 	public int getEndposition() {
 		return endposition;
 	}
