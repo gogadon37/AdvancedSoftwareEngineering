@@ -307,7 +307,7 @@ public class Main {
 					// Pass the code to the parser to break down the code line by line
 				
 					try {
-						parser.ValidCommands(Code, commands, consolepannel.jta, canvaspannel, commandFactory);
+						parser.runCommands(Code, commands, consolepannel.jta, canvaspannel, commandFactory);
 					} catch (Exception e1) {
 						// TODO Auto-generated catch block
 						//e1.printStackTrace();
@@ -319,7 +319,7 @@ public class Main {
 
 				
 					try {
-					 parser.ValidCommands(SingleCommand, commands, consolepannel.jta, canvaspannel, commandFactory);
+					 parser.runCommands(SingleCommand, commands, consolepannel.jta, canvaspannel, commandFactory);
 					} catch (Exception e1) {
 						// TODO Auto-generated catch block
 						//e1.printStackTrace();

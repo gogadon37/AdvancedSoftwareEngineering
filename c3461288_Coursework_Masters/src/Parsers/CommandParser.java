@@ -2,9 +2,7 @@ package Parsers;
 
 import java.util.ArrayList;
 import java.util.Collections;
-
 import javax.swing.JTextArea;
-
 import Commands.Command;
 import Commands.Factories.CommandFactory;
 import Ifs.Ifstatement;
@@ -20,6 +18,17 @@ import exceptions.NullCommandException;
 import exceptions.OpeningTagNotFoundException;
 import exceptions.UnclosedTagException;
 import exceptions.VariableNotFoundException;
+
+/**
+ * The class checks the commands against an array of Command Objects and executes them returning true if all have executed correctly.
+ * 
+ * @author George Lloyd-Anderson
+ * @version 1.0
+ * @since 04/01/20
+ * 
+
+ */
+
 
 
 public class CommandParser {
@@ -39,7 +48,35 @@ public class CommandParser {
 	String[] commandname;
 	int numberofloopscreated = 0;
 
-	public Boolean ValidCommands(String writtencommand, ArrayList<Command> commands, JTextArea jta, CanvasPannel canvasPannel, CommandFactory commandfactory) throws NullCommandException, IncorrectNumberofParamatersException, InvalidParamatersException, OpeningTagNotFoundException, VariableNotFoundException, UnclosedTagException, DuplicateVariableException, CommandNotFoundException {
+	
+	/** * The CommandParser class has one public method "runCommands" which looks through the code and executes the commands added.
+ * the method follows 5 main steps <br>
+ * 
+ * 1) Loop through the users commands and create any relevant objects for "Methods", "Loops" , "Variables" and "IfStatements" <br>
+ * 2) Process the tags mentioned in [1] for example run the loops adding the relevant commands inside for the number required and any commands needing removing are set to "deadcode" <br>
+ * 3) Remove the tags, comments and deadcode from the array by adding everything else to a new filteredarray. <br>
+ * 4) Loop through the filtered array and check the commands and parameters adding all correct commands to an approvedcommands array <br>
+ * 5) Finally for each of the approved commands their name is passed to the command factory and the returned command is executed. <br>
+ * 
+ * 
+	 * 
+	 * @param writtencommand Contains the commands entered by the user.
+	 * @param commands Contains all the Valid Command Objects.
+	 * @param jta Contains the JText Area console.
+	 * @param canvasPannel Contains the canvas panel in which to draw in.
+	 * @param commandfactory Contains the commandfactoryclass used to generate objects and execute them.
+	 * @return true if all the commands have executed successfully.
+	 * @throws NullCommandException Thrown when the array writtencommand contains no commands or comments.
+	 * @throws IncorrectNumberofParamatersException Thrown when the incorrect number of parameters are entered for a command.
+	 * @throws InvalidParamatersException Thrown when the parameters for a command are invalid.
+	 * @throws OpeningTagNotFoundException Thrown when an end tag is called without a corresponding start tag.
+	 * @throws VariableNotFoundException Thrown when a command uses an invalid variable.
+	 * @throws UnclosedTagException Thrown when an opening tag is created without a corresponding closing tag.
+	 * @throws DuplicateVariableException Thrown when a command tries to create a variable where the name already exists.
+	 * @throws CommandNotFoundException Thrown when a command is entered which is not a valid command.
+	 */
+	
+	public Boolean runCommands(String writtencommand, ArrayList<Command> commands, JTextArea jta, CanvasPannel canvasPannel, CommandFactory commandfactory) throws NullCommandException, IncorrectNumberofParamatersException, InvalidParamatersException, OpeningTagNotFoundException, VariableNotFoundException, UnclosedTagException, DuplicateVariableException, CommandNotFoundException {
 
 		console = jta;
 		String[] writtencommands = writtencommand.split("\\r?\\n|\\r");
@@ -552,6 +589,10 @@ public class CommandParser {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+		
+		// check that all opening tags have been closed
+		
+		
 		if (ifstatementarray.size() != 0) {
 
 			console.setText("please ensure all ifstatements are closed");
@@ -572,10 +613,10 @@ public class CommandParser {
 
 		}
 		
-		// execute methods 
 		
 
-		// execute the if statements
+		// PROCCESS THE IF STATMENTS
+		// for each if check the condition and if its true remove the if start and end tags else set the whole thing to deadcode.
 
 		for (Ifstatement ifs : completedifstatements) {
 
@@ -630,6 +671,8 @@ public class CommandParser {
 
 		}
 
+		
+		
 		// sort the loops by hiarchy followed by name
 		// this means that when looped through backwards it will begin with the deepest
 		// loop moving backwards
@@ -637,12 +680,6 @@ public class CommandParser {
 		// created first
 
 		Collections.sort(completedloops);
-
-		// Check that all loops that have been created are completed and return false if
-		// any loops havent been closed
-
-	
-
 		int numberofcommandsadded; // holds the number of commands added
 		int endoflastloop; // holds the end possision of the last loop
 
@@ -691,17 +728,20 @@ public class CommandParser {
 
 					}
 
+					
+					// Add the variable to the current end position
+					
 					numberofcommandsadded++;
 					System.out.println("adding index of " + (loop.getEndposition() - x1));
-					System.out.println("loop " + x + " adding "
-							+ writtencommandsblanklinesremoved.get((loop.getEndposition() - x1)));
-					writtencommandsblanklinesremoved.add(loop.getEndposition(),
-							writtencommandsblanklinesremoved.get((loop.getEndposition() - x1)));
+					System.out.println("loop " + x + " adding "+ writtencommandsblanklinesremoved.get((loop.getEndposition() - x1)));
+					writtencommandsblanklinesremoved.add(loop.getEndposition(),writtencommandsblanklinesremoved.get((loop.getEndposition() - x1)));
 
 				}
 
 				endoflastloop = loop.getEndposition() + numberofcommandsadded;
 
+				
+				
 				// update the positions of all the loops if commands have been added
 
 				for (Loop l : completedloops) {
@@ -726,8 +766,7 @@ public class CommandParser {
 
 		}
 
-		// remove the loop tags
-
+		
 		// clear the completed loops for the next time the button is clicked
 
 		if (completedloops.size() != 0) {
@@ -736,6 +775,12 @@ public class CommandParser {
 			numberofloopscreated = 0;
 
 		}
+		
+		
+		
+		
+	
+		
 
 		// remove all the command tags and deadcode from the array
 
@@ -745,7 +790,7 @@ public class CommandParser {
 
 			String splits[] = singString.trim().split(" ");
 			if (splits[0].equals("loop") || splits[0].trim().equals("endloop") || splits[0].equals("var")
-					|| splits[0].equals("deadcode") || singString.subSequence(0, 2).equals("//")) {
+					|| splits[0].equals("deadcode") || singString.trim().subSequence(0, 2).equals("//")) {
 
 				System.out.println("removing " + singString);
 
@@ -808,6 +853,17 @@ public class CommandParser {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+	/**
+	 * The IsValidCommand is called to check if a single line of code is valid it first checks the name against the commands array
+	 * followed by the calling the check parameters method passing in the paramaters.
+	 * 
+	 * @param command The single command string containing both the command and its parameters.
+	 * @return true if the command and its parameters are valid.
+	 * @throws CommandNotFoundException thrown when a command is not found.
+	 * @throws IncorrectNumberofParamatersException thrown when the command has the incorrect number of parameters.
+	 * @throws InvalidParamatersException thrown when the command has invalid parameters.
+	 */
+	
 	private Boolean IsValidCommand(String command)
 			throws CommandNotFoundException, IncorrectNumberofParamatersException, InvalidParamatersException {
 
@@ -1058,7 +1114,19 @@ public class CommandParser {
 	}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+ 
+	/**
+	 * The method checktheparamaters checks the paramaters against the requirements for the command entered. It also adds a command to the approved command array if its valid.
+	 * 
+	 * @param numberexpected The number of parameters expected for the command.
+	 * @param paramarray The array containing the parameters.
+	 * @param commandname the name of the command entered.
+	 * @return true if the paramaters are correct for the command entered.
+	 * @throws IncorrectNumberofParamatersException thrown when the command contains the incorrect number of parameters.
+	 * @throws InvalidParamatersException thrown when the command has invalid parameters.
+	 */
+	
+	
 	private boolean checktheparamaters(int numberexpected, String[] paramarray, String commandname)
 			throws IncorrectNumberofParamatersException, InvalidParamatersException {
 
@@ -1128,10 +1196,6 @@ public class CommandParser {
 
 	}
 
-	public String getVariable(String string) {
-
-		// TODO Auto-generated method stub
-		return "string";
-	}
+	
 
 }

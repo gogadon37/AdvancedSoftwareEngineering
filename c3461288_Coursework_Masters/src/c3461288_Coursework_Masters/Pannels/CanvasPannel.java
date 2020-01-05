@@ -80,7 +80,7 @@ public class CanvasPannel extends JPanel {
 		g.drawLine(positionx, positiony, (positionx+base), positiony);
 		g.drawLine((positionx+base), positiony, (positionx+base), (positiony+hyp));
 		g.drawLine((positionx+base), (positiony+hyp), positionx, positiony);
-		
+		repaint();
 		
 	
 		
