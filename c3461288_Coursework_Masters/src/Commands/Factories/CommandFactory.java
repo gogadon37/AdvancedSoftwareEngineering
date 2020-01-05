@@ -2,6 +2,7 @@ package Commands.Factories;
 
 import Commands.Circle;
 import Commands.Clear;
+import Commands.Color;
 import Commands.Command;
 import Commands.DrawTo;
 import Commands.MoveTo;
@@ -81,11 +82,16 @@ public class CommandFactory {
 			command = Reset.getInstance("reset", 0, canvas);
 			break;
 			
-			// Reset
+			// Triangle
 		case "triangle":
 			command = Triangle.getInstance("triangle", 3, canvas);
 			break;
-			
+		
+			// Reset
+		case "randomcolor":
+			command = Color.getInstance("randomcolor", 0, canvas);
+			break;
+		
 		
 		default:
 			throw new CommandNotFoundException("CommandObject not found  " + Type);

@@ -22,6 +22,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -63,16 +64,19 @@ public class Main {
 		JMenuBar jmbar = new JMenuBar();
 
 		JMenu File = new JMenu("File");
+		JMenu Help = new JMenu("Help");
 		jmbar.add(File);
+		jmbar.add(Help);
 
 		JMenuItem Load = new JMenuItem("Load");
 		JMenuItem Save = new JMenuItem("Save");
-		JMenuItem SaveImage = new JMenuItem("SaveImage");
-		
+		JMenuItem SaveImage = new JMenuItem("Save Image");
+		JMenuItem Commands = new JMenuItem("Commands");
 
 		File.add(Load);
 		File.add(Save);
 		File.add(SaveImage);
+		Help.add(Commands);
 
 		
 		// Create the pannels for the applications
@@ -108,7 +112,7 @@ public class Main {
 		
 		// Create an Array of all the commands
 		String[] commandstrings = new String[] { "circle", "clear", "drawto", "moveto", "rectangle", "reset",
-				"triangle"};
+				"triangle","randomcolor"};
 
 		// Create and ArrayList to hold all the command objects
 		
@@ -192,6 +196,31 @@ public class Main {
 
 				}
 
+			}
+		});
+		
+		
+		Commands.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+				JOptionPane.showMessageDialog(jframe, "COMMAND SYNTAX  \n \n"
+						+ "Circle int \n"
+						+ "Clear \n"
+						+ "Reset \n"
+						+ "Moveto int, int \n"
+						+ "Triangle int, int, int \n"
+						+ "DrawTo int, int  \n"
+						+ "Rectangle int, int \n"
+						+ "Randomcolor \n \n"
+						);
+				
+				
+				
+				
+				
 			}
 		});
 

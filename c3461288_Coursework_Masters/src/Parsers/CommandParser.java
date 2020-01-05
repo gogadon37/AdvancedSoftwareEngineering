@@ -131,6 +131,8 @@ public class CommandParser {
 
 			
 			counter++;
+			singlecommand = singlecommand.replaceAll("( )+", " ");
+			System.out.println(singlecommand);
 			String split[] = singlecommand.trim().split(" ");
 			
 			
@@ -316,15 +318,18 @@ public class CommandParser {
 
 				// check if we are dealing with a single or Multi-lined variable
 
-				String[] then = singlecommand.trim().split(" then ", 2);
+				String[] then = singlecommand.trim().split("then", 2);
 				
 
 				// if its a single command the then should be array should have two elements the
 				// condition and the command
 
 				if (then.length == 2) {
-					System.out.println(then[0]);
+					System.out.println(singlecommand);
+					System.out.println(then[0].trim());
 					System.out.println(then[0].trim().split(" ").length);
+					
+					
 					
 					if(then[0].trim().split(" ").length != 4 ) {
 						
@@ -620,6 +625,8 @@ public class CommandParser {
 
 		for (Ifstatement ifs : completedifstatements) {
 
+			System.out.println("checking");
+			
 			if (ifs.getCondition1() == ifs.getCondition2()) {
 
 				if (ifs.getSinglestatementcommands().trim().equals("na")) {
@@ -786,8 +793,9 @@ public class CommandParser {
 
 		for (String singString : writtencommandsblanklinesremoved) {
 
+			singString = singString.replaceAll("( )+", " ");
 			System.out.println("final command " + singString);
-
+			
 			String splits[] = singString.trim().split(" ");
 			if (splits[0].equals("loop") || splits[0].trim().equals("endloop") || splits[0].equals("var")
 					|| splits[0].equals("deadcode") || singString.trim().subSequence(0, 2).equals("//")) {

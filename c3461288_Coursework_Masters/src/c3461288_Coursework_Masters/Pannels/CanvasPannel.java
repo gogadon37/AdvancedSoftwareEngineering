@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.util.Random;
+
 import javax.swing.JPanel;
 
 public class CanvasPannel extends JPanel {
@@ -51,6 +53,31 @@ public class CanvasPannel extends JPanel {
 		positiony = y;
 	}
 	
+	public void color(){
+		
+		Random randomnumber = new Random();
+		int randomcolor = randomnumber.nextInt(7);
+		
+		switch (randomcolor) {
+		
+		case 0: g.setColor(Color.blue);
+			break;
+		case 1: g.setColor(Color.red);
+		    break;
+		case 2: g.setColor(Color.PINK);
+		  break;
+		case 3: g.setColor(Color.YELLOW);
+		break;
+		case 4: g.setColor(Color.MAGENTA);
+		break;
+		case 5: g.setColor(Color.ORANGE);
+		break;
+		case 6: g.setColor(Color.WHITE);
+		break;
+
+		
+		}
+	}
 	
 	//resets to top left hand corner
 	
